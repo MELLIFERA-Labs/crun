@@ -6,7 +6,7 @@ Python 3.8 or python3.10 is required to run this tool.
 
 ## Installation
 
-To install simply download the latest release from the [releases page]()
+To install simply download the latest release from the [releases page](https://github.com/MELLIFERA-Labs/crun/releases/tag/v0.1.0)
 
 ## Usage
 
