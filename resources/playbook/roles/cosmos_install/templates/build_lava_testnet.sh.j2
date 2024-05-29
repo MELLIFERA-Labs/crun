@@ -1,0 +1,8 @@
+source {{ ansible_env.HOME }}/.gvm/scripts/gvm
+gvm install {{ go_version }} -B
+gvm use {{ go_version }} --default
+export LAVA_BINARY=lavad
+mkdir -p {{build_dir}}/{{version }}
+make build
+mv build/{{ binary }} {{build_dir}}/{{ version }}
+

@@ -1,0 +1,75 @@
+---
+
+- name: Fail if download_binary is true and download_binary_url is not defined
+  fail:
+    msg: "download_binary is true but download_binary_url is not defined"
+  when: download_binary is true and download_binary_url is not defined
+
+- name: Clone the repository
+  ansible.builtin.git:
+    repo: "{{ repo }}"
+    dest: "{{ ansible_env.HOME }}/{{ netname }}"
+    version: "{{ version }}"
+    update: true
+
+
+- name: Create ansible_build directory
+  ansible.builtin.file:
+    path: "{{ build_dir }}/{{ version }}"
+    state: directory
+    mode: '0755'
+
+- name: Build the binary
+  block:
+    - name: Check if specific build script template exists
+      ansible.builtin.stat:
+        path: "{{ role_path }}/templates/build_{{ netname }}.sh.j2"
+      register: specific_template
+      delegate_to: localhost
+
+    - name: Set fact for template to use
+      ansible.builtin.set_fact:
+        template_to_use: "{{ 'build_' + netname + '.sh.j2' if specific_template.stat.exists else 'default.sh.j2' }}"
+
+    - name: Prepare build script
+      ansible.builtin.template:
+        src: "{{ template_to_use }}"
+        dest: "{{ build_dir }}/build_{{ netname }}.sh"
+        mode: '0755'
+
+    - name: Build the binary
+      ansible.builtin.shell: "bash {{ build_dir }}/build_{{ netname }}.sh"
+      args:
+       chdir: "{{ ansible_env.HOME }}/{{ netname }}"
+       executable: /bin/bash
+       creates: "{{ build_dir }}/{{ version }}/{{ binary }}"
+  when: download_binary is undefined or download_binary == false
+
+
+
+
+- name: Download binary
+  block:
+    - name: Check if cosmosd binary exists
+      ansible.builtin.stat:
+        path: "{{ build_dir }}/{{ version }}/{{ binary }}"
+      register: is_cosmos_binary
+
+    - name: Ensure the directory exists
+      ansible.builtin.file:
+        path: "{{ build_dir }}/{{ version }}"
+        state: directory
+        mode: '0755'
+      become: true
+
+    - name: Download binary
+      become: true
+      ansible.builtin.get_url:
+        url: "{{ download_binary_url }}"
+        dest: "{{ build_dir }}/{{ version }}/{{ binary }}"
+        mode: '0755'
+      when:
+        - download_binary is true
+        - not is_cosmos_binary.stat.exists
+
+

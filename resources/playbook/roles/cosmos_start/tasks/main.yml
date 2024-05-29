@@ -1,0 +1,115 @@
+- name: open p2p port
+  become: true
+  command: 'ufw allow {{ custom_port_prefix }}56/tcp'
+
+- name: Check if install_from is 'snapshot' and snapshot is not defined
+  fail:
+    msg: "Snapshot is not defined"
+  when: install_from is defined and install_from == snapshot and snapshot is not defined
+
+- name: Check if install_from is 'state_sync' and state_sync_rpc is not defined
+  fail:
+    msg: "State sync rpc is not defined"
+  when: install_from is defined and install_from == 'state_sync' and state_sync_rpc is not defined
+
+- name: Check if only one of use_snapshot and use_state_sync 
+  fail:
+    msg: "install_from is required  can be only 'snapshot' or 'state_sync'"
+  when: install_from is not defined or (install_from != 'snapshot' and install_from != 'state_sync')
+  
+- name: Download snapshot
+  ansible.builtin.shell: |
+    rm -rf {{ ansible_env.HOME }}/{{ cosmos_folder }}/data
+    curl -L {{ snapshot }} | tar -Ilz4 -xf - -C {{ ansible_env.HOME }}/{{ cosmos_folder }}
+  when: install_from == 'snapshot'
+  register: snapshot_download
+  async: 3000
+  poll: 0
+  args:
+    executable: /bin/bash
+
+- name: Download cosmo wasm 
+  ansible.builtin.shell: | 
+    curl -L {{ wasm }} | lz4 -dc - | tar -xf - -C {{ ansible_env.HOME }}/{{ cosmos_folder }}
+  args:
+    executable: /bin/bash
+  when: wasm is defined
+
+- name: Wait for snapshot download
+  ansible.builtin.async_status:
+    jid: "{{ snapshot_download.ansible_job_id }}"
+  register: job_status
+  until: job_status.finished
+  retries: 1000
+  delay: 5
+  when: install_from == 'snapshot'
+
+- name: Use state sync
+  block: 
+    - name: Use state sync peer
+      lineinfile:
+        path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/config/config.toml'
+        regexp: '^persistent_peers ='
+        line: 'persistent_peers = "{{ state_sync_peer }}"'
+        state: present
+      when: state_sync_peer is defined
+
+    - name: Apply state sync settings
+      shell: "{{ lookup('template', 'use_state_sync.sh.j2') }}"
+      args:
+       executable: /bin/bash
+  when: install_from == 'state_sync' 
+
+- name: Create cosmovisor directories
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    mode: '0755'
+  with_items:
+    - '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/genesis/bin'
+    - '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/upgrades'
+
+- name: Create app symlink
+  ansible.builtin.file:
+    src: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/genesis'
+    dest: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/current'
+    state: link
+    force: true
+  become: true
+
+- name: Create app symlink 2
+  ansible.builtin.file:
+    src: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/current/bin/{{ binary }}'
+    dest: '/usr/local/bin/{{ binary }}'
+    state: link
+    force: true
+  become: true
+
+- name: Set local node
+  ansible.builtin.command:
+    cmd: '{{cosmos_binary}} config node tcp://localhost:{{ custom_port_prefix }}57  --home={{ ansible_env.HOME }}/{{ cosmos_folder }}'
+  changed_when: false
+
+- name: Copy daemon file to cosmovisor
+  ansible.builtin.copy:
+    src: '{{ ansible_env.HOME }}/.crun/bins/{{ netname }}/{{ version }}/{{ binary}}'
+    dest: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/genesis/bin'
+    remote_src: true
+    mode: '0755'
+
+- name: Copy service file
+  become: true
+  ansible.builtin.template:
+    src: 'cosmovisor.service.j2'
+    dest: '/etc/systemd/system/{{ service_name }}.service'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start cosmovisor service
+  become: true
+  ansible.builtin.systemd:
+    name: '{{ service_name }}'
+    state: restarted
+    daemon_reload: true
+    enabled: true

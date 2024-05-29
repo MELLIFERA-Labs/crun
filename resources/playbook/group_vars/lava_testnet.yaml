@@ -1,0 +1,23 @@
+chain_id: lava-testnet-2 
+netname: lava_testnet
+repo: https://github.com/lavanet/lava.git
+version: v2.0.0
+binary: lavad
+genesis: https://storage.mellifera.network/lava_testnet/genesis.json
+addressbook: https://storage.mellifera.network/lava_testnet/addrbook.json
+snapshot: https://storage.mellifera.network/lava_testnet/snapshot_latest.tar.lz4
+go_version: go1.20.14
+cosmos_folder: '.lava'
+seeds: "e28b8ad6e20fda1e647c977fb256208b91b74893@116.202.80.186:14456"
+peers: e29acb7239b0532cc7134befe187e83e0c84c3bc@62.171.135.97:24656,2044ce5fc86c2d2b418e50421abc18bde5f952cd@144.91.99.234:656,f601fe23f13ec16057c14701feb15b7b424c5fdb@109.199.101.81:14456,74a6baff434b8c7189b8d8476c762449cc2a70e6@213.199.57.18:14456,d5519e378247dfb61dfe90652d1fe3e2b3005a5b@65.109.68.190:14456,dae571b14dcb4e55566071cb0083a937edd0cfe8@109.199.116.71:19956,9595f5ed6f97b0a9a4088c0a235356d0d2d77167@31.220.90.190:24656,802e15de52338029c6e2de2901c8cdd75f15ee9b@64.120.88.81:23656,5c2a752c9b1952dbed075c56c600c3a79b58c395@195.3.220.21:27066,e49bd2f4ebe95ccf198cc997151a9389a7482411@167.235.115.119:36656,f6a2359abadba6b22544658a3492aed84b4e26b4@143.110.185.169:26656,3306e10f1635f71e1d93219a369f4907ec062ad5@167.235.14.83:17656,3dd292d048d215a05687c6655c189faf82f74b2f@38.242.241.7:24656,111eb709143ec92fdad9d819d4a454e4f0bc79c0@15.235.204.150:21156,b610a79e26758553ec637c57a722a4d9503b4e29@167.86.102.68:14456,e33ea4c7611bfee8160ad577890a9ae158a9a3ac@95.217.200.98:19656
+custom_port_prefix: 199
+service_name: lavad
+download_binary_url: "https://storage.mellifera.network/bins/lava-testnet/{{ version }}/lavad"
+
+state_sync_rpc: "https://lava-testnet-rpc.mellifera.network:443"
+state_sync_peer: "e28b8ad6e20fda1e647c977fb256208b91b74893@116.202.80.186:14456"
+
+download_binary: true
+download_cosmovisor: true
+
+

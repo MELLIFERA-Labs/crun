@@ -1,0 +1,58 @@
+---
+
+- name: Fail if download_cosmovisor is true and download_cosmovisor_url is not defined
+  fail:
+    msg: "download_cosmovisor is true but download_cosmovisor_url is not defined"
+  when: download_cosmovisor is true and download_cosmovisor_url is not defined
+
+- name: Install packages
+  become: true
+  ansible.builtin.apt:
+   pkg:
+    - bison
+    - jq
+    - make
+    - build-essential
+    - git
+    - lz4
+    - tar 
+   state: present
+   update_cache: true
+
+- name: Install GVM (Go Version Manager)
+  ansible.builtin.shell: >
+    bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+  args:
+   creates: "{{ ansible_env.HOME }}/.gvm"
+   executable: /bin/bash
+
+- name: Install cosmovisor
+  ansible.builtin.shell: |
+    source {{ ansible_env.HOME }}/.gvm/scripts/gvm
+    gvm install go1.20.14 -B 
+    gvm use go1.20.14 --default
+    go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
+    sudo mv $(which cosmovisor) /usr/local/bin/cosmovisor  
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/cosmovisor
+  when: download_cosmovisor is false
+
+- name: Download cosmovisor
+  block:
+    - name: Check if cosmosd binary exists
+      ansible.builtin.stat:
+        path: /usr/local/bin/cosmovisor
+      register: is_cosmosvisor_binary
+
+    - name: Download cosmovisor
+      become: true
+      ansible.builtin.get_url:
+        url: "{{ download_cosmovisor_url }}"
+        dest: /usr/local/bin/cosmovisor
+        mode: '0755'
+      when:
+        - download_cosmovisor is true
+        - not is_cosmosvisor_binary.stat.exists
+
+

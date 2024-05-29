@@ -1,0 +1,23 @@
+---
+- name: Set cosmos binary
+  ansible.builtin.set_fact:
+    cosmos_binary: "{{ ansible_env.HOME }}/.crun/bins/{{ netname }}/{{ version }}/{{ binary }}"
+- name: Ensure that the folder does not exist
+  ansible.builtin.file:
+    path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}'
+    state: absent
+
+- name: Init Node
+  ansible.builtin.command:
+    cmd: '{{ cosmos_binary }} init {{ node_name }} --home={{ ansible_env.HOME }}/{{ cosmos_folder }} --chain-id {{ chain_id }}'
+
+- name: Copy genesis.json
+  ansible.builtin.get_url:
+    url: '{{ genesis }}'
+    dest: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/config/genesis.json'
+    mode: '0644'
+    force: true
+
+- name: Set chain-id
+  ansible.builtin.command:
+    cmd: '{{cosmos_binary}} config chain-id {{ chain_id }} --home={{ ansible_env.HOME }}/{{ cosmos_folder }}'

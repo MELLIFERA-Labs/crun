@@ -1,0 +1,18 @@
+[Unit]
+Description=cosmovisor {{ service_name }}
+After=network-online.target
+
+[Service]
+User={{ ansible_env.USER }}
+ExecStart=/usr/local/bin/cosmovisor run start --home {{ ansible_env.HOME }}/{{ cosmos_folder }}
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+Environment="DAEMON_NAME={{ binary }}"
+Environment="DAEMON_HOME={{ ansible_env.HOME }}/{{ cosmos_folder }}"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+Environment="UNSAFE_SKIP_BACKUP=true"
+
+[Install]
+WantedBy=multi-user.target

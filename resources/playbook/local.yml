@@ -1,0 +1,10 @@
+- name: Install node locally 
+  hosts: localhost
+  become: true        # Enables privilege escalation
+  roles:
+   - cosmos_software
+   - cosmos_install
+   - cosmos_init
+   - cosmos_configure
+   - cosmos_start
+
