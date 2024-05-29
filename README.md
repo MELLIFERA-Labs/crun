@@ -2,6 +2,8 @@
 
 CRUN is a simple command line tool to spin up blockchain node. It is designed to be simple and easy to use.
 
+Python 3.8 or python3.10 is required to run this tool. 
+
 ## Installation
 
 To install simply download the latest release from the [releases page]()
