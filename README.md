@@ -8,6 +8,13 @@ Python 3.8 or python3.10 is required to run this tool.
 
 To install simply download the latest release from the [releases page](https://github.com/MELLIFERA-Labs/crun/releases/tag/v0.1.0)
 
+You can use command for download
+```bash
+
+wget https://github.com/mellifera-labs/crun/releases/latest/download/crun 
+chmod +x crun  
+
+```
 ## Usage
 
 
@@ -17,25 +24,60 @@ To install simply download the latest release from the [releases page](https://g
 crun install lava_testnet
 ```
 
-### Change default settings 
+### RUN  
 
-1. Show the current settings for network 
+Install with default settings 
+
+```bash
+crun install lava_testnet
+```
+Check `crun list` for available networks for install
+
+## Example of usage 
+
+You can override any setting from `crun show <network>` output by passing `-e` flag with `key=value` pairs. 
+
+For example, let's check the settings for lava_testnet
 
 ```bash
 crun show lava_testnet
 ```
 
-2. You can check how setting will be changed by running the following command
-
-```bash
-crun show lava_testnet -e "install_from=state_sync"
+```yaml
+hain_id: lava-testnet-2
+netname: lava_testnet
+repo: https://github.com/lavanet/lava.git
+version: v2.1.1
+binary: lavad
+genesis: https://storage.mellifera.network/lava_testnet/genesis.json
+addressbook: https://storage.mellifera.network/lava_testnet/addrbook.json
+snapshot: https://storage.mellifera.network/lava_testnet/snapshot_latest.tar.lz4
+go_version: go1.20.14
+cosmos_folder: '.lava'
+...etc
 ```
+Any of these settings can be overridden with `-e` flag. 
 
-3. Run install with new settings
+Here is few examples of usage:
+
+1. Install lava_testnet from state_sync
 
 ```bash
+# Check modified settings 
+crun show lava_testnet -e "install_from=state_sync"
+# Run crun to Install lava_testnet from state_sync
 crun install lava_testnet -e "install_from=state_sync"
 ```
+
+2. Install `lava_testnet` with custom port prefix and custom cosmos folder
+
+```bash
+crun install lava_testnet -e "custom_port_prefix=137;cosmos_folder=.lavatestnet"
+```
+This command will install lava_testnet with custom port prefix 137 and cosmos HOME folder .lavatestnet
+
+RPC port will be 13137, P2P port will be 13656, GRPC port will be 13657
+
 
 ## Install crun from source
 
@@ -53,3 +95,13 @@ pip install .
 ```bash
 python crun.py
 ```
+
+## Supported networks
+
+- Lava testnet 
+- Warden testnet
+
+
+Check more how it works with our [services](https://services.mellifera.network/)
+
+
