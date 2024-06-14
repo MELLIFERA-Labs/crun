@@ -2,10 +2,34 @@
 - name: Set cosmos binary
   ansible.builtin.set_fact:
     cosmos_binary: "{{ ansible_env.HOME }}/.crun/bins/{{ netname }}/{{ version }}/{{ binary }}"
-- name: Ensure that the folder does not exist
-  ansible.builtin.file:
-    path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}'
-    state: absent
+- name: Check cosmos folder
+  block: 
+    - name: Check the folder exists
+      ansible.builtin.stat:
+        path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}'
+      register: cosmos_folder_status
+
+    - name: Fail the folder exists
+      ansible.builtin.fail:
+        msg: "The folder '{{ ansible_env.HOME }}/{{ cosmos_folder }}' already exists."
+      when: cosmos_folder_status.stat.exists
+  when: force_install is not defined 
+
+- name: Force install
+  block: 
+    - name: Ensure that service is stopped
+      ansible.builtin.systemd:
+        name: '{{ service_name }}'
+        state: stopped
+      become: true
+      ignore_errors: true
+
+    - name: Ensure that the folder does not exist
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}'
+        state: absent
+  when: force_install is defined 
+          
 
 - name: Init Node
   ansible.builtin.command:

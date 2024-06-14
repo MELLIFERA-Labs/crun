@@ -1,7 +1,9 @@
 - name: open p2p port
   become: true
   command: 'ufw allow {{ custom_port_prefix }}56/tcp'
-
+- name: debug
+  debug:
+    msg: "install_from: {{ install_from }}"
 - name: Check if install_from is 'snapshot' and snapshot is not defined
   fail:
     msg: "Snapshot is not defined"
@@ -52,7 +54,7 @@
         regexp: '^persistent_peers ='
         line: 'persistent_peers = "{{ state_sync_peer }}"'
         state: present
-      when: state_sync_peer is defined
+      when: state_sync_peer is defined and state_sync_peer | length > 0
 
     - name: Apply state sync settings
       shell: "{{ lookup('template', 'use_state_sync.sh.j2') }}"
@@ -68,22 +70,6 @@
   with_items:
     - '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/genesis/bin'
     - '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/upgrades'
-
-- name: Create app symlink
-  ansible.builtin.file:
-    src: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/genesis'
-    dest: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/current'
-    state: link
-    force: true
-  become: true
-
-- name: Create app symlink 2
-  ansible.builtin.file:
-    src: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/cosmovisor/current/bin/{{ binary }}'
-    dest: '/usr/local/bin/{{ binary }}'
-    state: link
-    force: true
-  become: true
 
 - name: Set local node
   ansible.builtin.command:
