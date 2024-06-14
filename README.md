@@ -68,7 +68,7 @@ crun install lava_testnet -e "custom_port_prefix=137;cosmos_folder=.lavatestnet"
 ```
 This command will install lava_testnet with custom port prefix 137 and cosmos HOME folder .lavatestnet
 
-RPC port will be 13137, P2P port will be 13656, GRPC port will be 13657
+RPC port will be 13757, P2P port will be 13756, GRPC port will be 13790, REST port will be 13717; instead of default 26657, 26656, 9090, 1317
 
 
 ## Install crun from source
