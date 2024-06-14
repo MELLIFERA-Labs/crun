@@ -15,16 +15,8 @@ wget https://github.com/mellifera-labs/crun/releases/latest/download/crun
 chmod +x crun  
 
 ```
+
 ## Usage
-
-
-### Install a blockchain node example
-
-```bash
-crun install lava_testnet
-```
-
-### RUN  
 
 Install with default settings 
 
