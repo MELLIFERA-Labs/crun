@@ -18,6 +18,13 @@
     line: '{{ item.value }}'
   loop: '{{ config_port_changes | dict2items }}'
 
+- name: Set minimum-gas-prices
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/config/app.toml'
+    regexp: '^minimum-gas-prices = ".*"$'
+    line: 'minimum-gas-prices = "{{ min_gas_price }}"'
+  when: min_gas_price is defined
+
 - name: Adjust app.toml ports
   lineinfile:
     path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/config/app.toml'
