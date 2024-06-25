@@ -92,6 +92,7 @@ python crun.py
 
 - Lava testnet 
 - Warden testnet
+- Kyve mainnet
 
 
 Check more how it works with our [services](https://services.mellifera.network/)
