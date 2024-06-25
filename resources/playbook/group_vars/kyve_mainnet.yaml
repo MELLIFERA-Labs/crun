@@ -1,0 +1,32 @@
+chain_id: kyve-1 
+netname: kyve_mainnet
+
+repo: https://github.com/KYVENetwork/chain.git
+version: v1.4.0
+
+binary: kyved
+
+genesis: https://storage.mellifera.network/kyve_mainnet/genesis.json
+addressbook: https://storage.mellifera.network/kyve_mainnet/addrbook.json
+snapshot: https://storage.mellifera.network/kyve_mainnet/snapshot_latest.tar.lz4
+download_binary_url: "https://storage.mellifera.network/bins/kyve_mainnet/{{ version }}/kyved"
+
+go_version: go1.20.11
+cosmos_folder: '.kyve'
+
+seeds: "70e8f65e40160a018ae66334c8716dc85c3fd568@135.181.130.190:18356"
+peers: "70e8f65e40160a018ae66334c8716dc85c3fd568@135.181.130.190:18356"
+custom_port_prefix: 183
+service_name: kyved
+
+state_sync_rpc: "https://kyve-mainnet-rpc.mellifera.network:443"
+state_sync_peer: "70e8f65e40160a018ae66334c8716dc85c3fd568@135.181.130.190:18356"
+
+download_binary: true
+download_cosmovisor: true
+
+# public endpoints
+public_rpc: "https://kyve-mainnet-rpc.mellifera.network:443"
+public_rest: "https://kyve-mainnet-rest.mellifera.network:443"
+public_grpc: "kyve-mainnet-grpc.mellifera.network:443"
+public_seed: "70e8f65e40160a018ae66334c8716dc85c3fd568@135.181.130.190:18356"
