@@ -1,0 +1,23 @@
+chain_id: lava-mainnet-1
+netname: lava_mainnet  
+repo: https://github.com/lavanet/lava.git
+version: v2.2.0
+binary: lavad
+genesis: "https://storage.mellifera.network/lava_mainnet/genesis.json"
+addressbook: https://storage.mellifera.network/lava_mainnet/addrbook.json
+snapshot: https://storage.mellifera.network/lava_mainnet/snapshot_latest.tar.lz4
+go_version: go1.21.11
+cosmos_folder: '.lava'
+seeds: "a085b1b06357ab508ca7f43a8766c7cb5a2a369e@lava-mainnet-ps.mellifera.network:13356"
+peers: "a085b1b06357ab508ca7f43a8766c7cb5a2a369e@lava-mainnet-ps.mellifera.network:13356"
+custom_port_prefix: 191
+service_name: lava
+download_binary_url: "https://storage.mellifera.network/bins/lava_mainnet/{{ version }}/lavad"
+
+state_sync_rpc: "https://lava-mainnet-rpc.mellifera.network:443"
+state_sync_peer: "a085b1b06357ab508ca7f43a8766c7cb5a2a369e@lava-mainnet-ps.mellifera.network:13356"
+
+min_gas_price: 0.000000001ulava
+
+download_binary: true
+download_cosmovisor: true
