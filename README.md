@@ -90,7 +90,8 @@ python crun.py
 
 ## Supported networks
 
-- Lava testnet 
+- Lava testnet
+- Lava mainnet 
 - Warden testnet
 - Kyve mainnet
 
