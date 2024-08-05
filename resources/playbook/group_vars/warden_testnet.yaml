@@ -2,7 +2,7 @@ chain_id: buenavista-1
 netname: warden_testnet
 
 repo: https://github.com/warden-protocol/wardenprotocol.git
-version: v0.3.0
+version: v0.3.2
 
 binary: wardend
 
@@ -15,13 +15,13 @@ wasm: "https://storage.mellifera.network/warden_testnet/wasm_latest.tar.lz4"
 go_version: go1.21.11
 cosmos_folder: '.warden'
 
-seeds: "47822fa9dd7fc9e158e11b0233071eb69db70e00@135.181.163.246:27756"
-peers: "47822fa9dd7fc9e158e11b0233071eb69db70e00@135.181.163.246:27756"
+seeds: "2a7501f4251d944e52cce0a138c189f832b6c4fe@65.108.100.31:27756"
+peers: "2a7501f4251d944e52cce0a138c189f832b6c4fe@65.108.100.31:27756"
 custom_port_prefix: 273
 service_name: wardend
 
 state_sync_rpc: "https://warden-testnet-rpc.mellifera.network:443"
-state_sync_peer: "47822fa9dd7fc9e158e11b0233071eb69db70e00@135.181.163.246:27756"
+state_sync_peer: "2a7501f4251d944e52cce0a138c189f832b6c4fe@65.108.100.31:27756"
 
 min_gas_price: 0.0025uward
 
@@ -33,4 +33,4 @@ download_cosmovisor: true
 public_rpc: "https://warden-testnet-rpc.mellifera.network:443"
 public_rest: "https://warden-testnet-rest.mellifera.network"
 public_grpc: "warden-testnet-grpc.mellifera.network:443"
-public_seed: "47822fa9dd7fc9e158e11b0233071eb69db70e00@135.181.163.246:27756"
+public_seed: "2a7501f4251d944e52cce0a138c189f832b6c4fe@65.108.100.31:27756"
