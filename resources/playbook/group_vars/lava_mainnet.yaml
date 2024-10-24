@@ -8,14 +8,14 @@ addressbook: https://storage.mellifera.network/lava_mainnet/addrbook.json
 snapshot: https://storage.mellifera.network/lava_mainnet/snapshot_latest.tar.lz4
 go_version: go1.21.11
 cosmos_folder: '.lava'
-seeds: "a085b1b06357ab508ca7f43a8766c7cb5a2a369e@lava-mainnet-ps.mellifera.network:13356"
-peers: "a085b1b06357ab508ca7f43a8766c7cb5a2a369e@lava-mainnet-ps.mellifera.network:13356"
+seeds: "b3a53d91c3d438c3a1a87860ea0fa95b3c4d7037@lava-mainnet-ps.mellifera.network:13356"
+peers: "b3a53d91c3d438c3a1a87860ea0fa95b3c4d7037@lava-mainnet-ps.mellifera.network:13356"
 custom_port_prefix: 191
 service_name: lava
 download_binary_url: "https://storage.mellifera.network/bins/lava_mainnet/{{ version }}/lavad"
 
 state_sync_rpc: "https://lava-mainnet-rpc.mellifera.network:443"
-state_sync_peer: "a085b1b06357ab508ca7f43a8766c7cb5a2a369e@lava-mainnet-ps.mellifera.network:13356"
+state_sync_peer: "b3a53d91c3d438c3a1a87860ea0fa95b3c4d7037@lava-mainnet-ps.mellifera.network:13356"
 
 min_gas_price: 0.000000001ulava
 

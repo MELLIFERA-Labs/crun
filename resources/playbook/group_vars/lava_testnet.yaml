@@ -1,7 +1,7 @@
 chain_id: lava-testnet-2
 netname: lava_testnet
 repo: https://github.com/lavanet/lava.git
-version: v2.1.3
+version: v3.0.2
 binary: lavad
 genesis: https://storage.mellifera.network/lava_testnet/genesis.json
 addressbook: https://storage.mellifera.network/lava_testnet/addrbook.json
@@ -19,5 +19,4 @@ state_sync_peer: "e28b8ad6e20fda1e647c977fb256208b91b74893@116.202.80.186:14456"
 
 download_binary: true
 download_cosmovisor: true
-
 

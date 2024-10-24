@@ -1,8 +1,8 @@
-chain_id: buenavista-1 
+chain_id: chiado_10010-1
 netname: warden_testnet
 
 repo: https://github.com/warden-protocol/wardenprotocol.git
-version: v0.3.2
+version: v0.5.2
 
 binary: wardend
 
@@ -10,22 +10,23 @@ genesis: "https://storage.mellifera.network/warden_testnet/genesis.json"
 addressbook: https://storage.mellifera.network/warden_testnet/addrbook.json
 snapshot: https://storage.mellifera.network/warden_testnet/snapshot_latest.tar.lz4
 wasm: "https://storage.mellifera.network/warden_testnet/wasm_latest.tar.lz4"
-
+download_binary_url: "https://storage.mellifera.network/bins/warden_testnet/{{ version }}/wardend"
 
 go_version: go1.21.11
 cosmos_folder: '.warden'
 
-seeds: "2a7501f4251d944e52cce0a138c189f832b6c4fe@65.108.100.31:27756"
-peers: "2a7501f4251d944e52cce0a138c189f832b6c4fe@65.108.100.31:27756"
+seeds: "3a01ed56372852ff30576d39a2b624b3d047932f@65.108.100.31:27756"
+peers: "3a01ed56372852ff30576d39a2b624b3d047932f@65.108.100.31:27756"
+
 custom_port_prefix: 273
 service_name: wardend
 
-state_sync_rpc: "https://warden-testnet-rpc.mellifera.network:443"
-state_sync_peer: "2a7501f4251d944e52cce0a138c189f832b6c4fe@65.108.100.31:27756"
+state_sync_rpc: "https://rpc.chiado.wardenprotocol.org"
+state_sync_peer: "3a01ed56372852ff30576d39a2b624b3d047932f@65.108.100.31:27756"
 
-min_gas_price: 0.0025uward
+min_gas_price: 25000000award
 
-download_binary: false
+download_binary: true
 download_cosmovisor: true
 
 
