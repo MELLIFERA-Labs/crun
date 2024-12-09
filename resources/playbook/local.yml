@@ -1,10 +1,19 @@
-- name: Install node locally 
+- name: Install node locally
   hosts: localhost
-  become: true        # Enables privilege escalation
-  roles:
-   - cosmos_software
-   - cosmos_install
-   - cosmos_init
-   - cosmos_configure
-   - cosmos_start
+  become: true
+  tasks:
+    - name: Include Namada role
+      include_role:
+        name: cosmos_namada_configure
+      when: netname == 'namada_mainnet'
 
+    - name: Include other roles
+      include_role:
+        name: "{{ item }}"
+      loop:
+        - cosmos_software
+        - cosmos_install
+        - cosmos_init
+        - cosmos_configure
+        - cosmos_start
+      when: netname != 'namada_mainnet' 

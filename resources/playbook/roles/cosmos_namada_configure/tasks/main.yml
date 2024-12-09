@@ -1,0 +1,162 @@
+- name: register public ip
+  uri:
+    url: 'https://api.ipify.org?format=json'
+  register: public_ip
+
+- name: Check if namada binary is already downloaded
+  stat:
+    path: /usr/local/bin/namada
+  register: namada_stat
+
+- name: Download namada binary
+  become: true
+  ansible.builtin.shell: |
+    rm -rf /usr/local/bin/namada*
+    curl -L {{ download_binary_url }} | tar -Ilz4 -xf - -C /usr/local/bin/
+  when: not namada_stat.stat.exists
+
+- name: Check if cometbft binary is already downloaded
+  stat:
+    path: /usr/local/bin/cometbft
+  register: cometbft_stat
+
+- name: Download CometBFT binary
+  become: true
+  ansible.builtin.shell: |
+    rm -rf /usr/local/bin/cometbft
+    wget -P /usr/local/bin {{ cometbft_download_binary_url }}
+    chmod +x /usr/local/bin/cometbft
+  when: not cometbft_stat.stat.exists
+
+- name: Export environment variables to .bashrc
+  become: true
+  ansible.builtin.lineinfile:
+    path: "/home/{{ ansible_env.USER }}/.bashrc"
+    line: "export {{ item.key }}={{ item.value }}" 
+    create: yes
+  loop:
+    - { key: 'NAMADA_NETWORK_CONFIGS_SERVER', value: '{{ genesis }}' }
+    - { key: 'XDG_DATA_HOME', value: "{{ ansible_env.HOME }}/{{ cosmos_folder }}" }
+
+- name: Reload bashrc
+  become: true
+  ansible.builtin.shell: ". /home/ubuntu/.bashrc"
+
+- name: Force install
+  block: 
+    - name: Ensure that service is stopped
+      ansible.builtin.systemd:
+        name: '{{ service_name }}'
+        state: stopped
+      become: true
+      ignore_errors: true
+
+    - name: Ensure that the folder does not exist
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/namada'
+        state: absent
+  when: force_install is defined 
+
+- name: Init Node
+  ansible.builtin.command:
+    cmd: 'namadac utils join-network --chain-id {{ chain_id }}'
+  environment:
+    NAMADA_NETWORK_CONFIGS_SERVER: "{{ namada_nerwork_configs_server }}"
+    XDG_DATA_HOME: "{{ ansible_env.HOME }}/{{ cosmos_folder }}"
+
+- name: Update peers in config.toml file
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/namada/{{ chain_id }}/config.toml'
+    regexp: '^persistent_peers ='
+    line: 'persistent_peers = "{{ peers }}"'
+    state: present
+  when: peers is defined
+
+- name: Update seeds in config.toml file
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/namada/{{ chain_id }}/config.toml'
+    regexp: '^seeds ='
+    line: 'seeds = "{{ seeds }}"'
+    state: present
+  when: seeds is defined
+
+- name: Adjust config.toml port
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/namada/{{ chain_id }}/config.toml'
+    regexp: '{{ item.key }}'
+    line: '{{ item.value }}'
+  loop: '{{ config_port_changes | dict2items }}'
+
+- name: Set up external address
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/namada/{{ chain_id }}/config.toml'
+    regexp: 'external_address = "'
+    line: 'external_address = "{{ public_ip.json.ip }}:{{ custom_port_prefix }}56"'
+    state: present
+
+- name: Create cometbft and config directories
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/{{ cosmos_folder }}/namada/{{ chain_id }}/cometbft/config"
+    state: directory
+    mode: '0755'
+
+- name: Dowload addrbook
+  ansible.builtin.get_url:
+    url: '{{ addressbook }}'
+    dest: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/namada/{{ chain_id }}/cometbft/config/addrbook.json'
+    mode: '0644'
+    force: true
+  when: addressbook is defined
+
+- name: Download and wait for snapshot
+  block:
+    - name: Download snapshot
+      ansible.builtin.shell: |
+        curl -L {{ snapshot }} | tar -Ilz4 -xf - -C {{ ansible_env.HOME }}/{{ cosmos_folder }}/namada/{{ chain_id }}
+      register: snapshot_download
+      async: 3000
+      poll: 0
+      args:
+        executable: /bin/bash
+
+    - name: Wait for snapshot download
+      ansible.builtin.async_status:
+        jid: "{{ snapshot_download.ansible_job_id }}"
+      register: job_status
+      until: job_status.finished
+      retries: 1000
+      delay: 5
+  when: install_from == 'snapshot'
+
+- name: Use state sync
+  block: 
+    - name: Use state sync peer
+      lineinfile:
+        path: '{{ ansible_env.HOME }}/{{ cosmos_folder }}/namada/{{ chain_id }}/config.toml'
+        regexp: '^persistent_peers ='
+        line: 'persistent_peers = "{{ state_sync_peer }}"'
+        state: present
+      when: state_sync_peer is defined and state_sync_peer | length > 0
+
+    - name: Apply state sync settings
+      shell: "{{ lookup('template', 'use_state_sync.sh.j2') }}"
+      args:
+       executable: /bin/bash
+  when: install_from == 'state_sync' 
+
+- name: Copy service file
+  become: true
+  ansible.builtin.template:
+    src: 'namada.service.j2'
+    dest: '/etc/systemd/system/{{ service_name }}.service'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start namada service
+  become: true
+  ansible.builtin.systemd:
+    name: '{{ service_name }}'
+    state: restarted
+    daemon_reload: true
+    enabled: true

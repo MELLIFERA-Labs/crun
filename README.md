@@ -1,4 +1,4 @@
-# CRUN 
+l# CRUN 
 
 CRUN is a simple command line tool to spin up blockchain node. It is designed to be simple and easy to use.
 
@@ -90,6 +90,7 @@ python crun.py
 
 ## Supported networks
 
+- Namada mainnet
 - Lava testnet
 - Lava mainnet 
 - Warden testnet
