@@ -123,10 +123,10 @@ def install(network_name, extra_vars):
         print_error('Network %s not found' % network_name)
         return
     final_config = {**default_vars, **config, **ext}
-    if os.path.exists(final_config['cosmos_folder']):
-        print_error('Cosmos folder %s already exists. Please remove it before running the installation or change "cosmos_folder" var with --extra-var option' % final_config['cosmos_folder'])
-        return
-     
+    # if os.path.exists(final_config['cosmos_folder']):
+    #     print_error('Cosmos folder %s already exists. Please remove it before running the installation or change "cosmos_folder" var with --extra-var option' % final_config['cosmos_folder'])
+    #     return
+    
     if os.geteuid() != 0:
         print_error('Installation requires root privileges. Creating services file and start systemd unit.\nPlease run: sudo crun install %s' % network_name)
         return
