@@ -1,4 +1,4 @@
-l# CRUN 
+# CRUN 
 
 CRUN is a simple command line tool to spin up blockchain node. It is designed to be simple and easy to use.
 
